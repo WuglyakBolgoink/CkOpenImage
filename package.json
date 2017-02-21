@@ -1,0 +1,43 @@
+{
+  "name": "de-cyberkatze-ckopenimage",
+  "version": "1.0.0",
+  "description": "This plugin is intended to show a picture from an URL into a Photo Viewer with zoom features.",
+  "cordova": {
+    "id": "de-cyberkatze-ckopenimage",
+    "platforms": [
+      "ios"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WuglyakBolgoink/CkOpenImage.git"
+  },
+  "keywords": [
+    "cordova",
+    "photoviewer",
+    "ecosystem:cordova",
+    "ios",
+    "image",
+    "viewer",
+    "images",
+    "open",
+    "show",
+    "cordova-ios"
+  ],
+  "engines": [
+    {
+      "name": "cordova",
+      "version": ">=4.0.0"
+    },
+    {
+      "name": "cordova-plugman",
+      "version": ">=4.2.0"
+    }
+  ],
+  "author": "Wuglyak Bolgoink",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/WuglyakBolgoink/CkOpenImage/issues"
+  },
+  "homepage": "https://github.com/WuglyakBolgoink/CkOpenImage#readme"
+}
