@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<plugin id="de-cyberkatze-ckopenimage" version="1.0.0" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+	<name>CkOpenImage</name>
+	<description>This plugin is intended to show a picture from an URL into a Photo Viewer with zoom features.</description>
+
+	<js-module name="CkOpenImage" src="www/CkOpenImage.js">
+		<clobbers target="CkOpenImage" />
+	</js-module>
+
+	<platform name="ios">
+		<config-file parent="/*" target="config.xml">
+			<feature name="CkOpenImage">
+				<param name="ios-package" value="CkOpenImage" />
+                <param name="onload" value="true" />
+			</feature>
+		</config-file>
+		<source-file src="src/ios/CkOpenImage.m" />
+	</platform>
+</plugin>
