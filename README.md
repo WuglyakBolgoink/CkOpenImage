@@ -8,7 +8,6 @@ Cordova plugin is intended to show a picture from an URL into a Photo Viewer wit
 [![iOS](https://img.shields.io/badge/iOS-success-green.svg)](https://shields.io)
 
 [![NPM](https://nodei.co/npm/cordova-plugin-ckopenimage.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/cordova-plugin-ckopenimage/)
-
 [![NPM](https://nodei.co/npm-dl/cordova-plugin-ckopenimage.png?months=1)](https://nodei.co/npm-dl/cordova-plugin-ckopenimage.png?months=1)
 
 ## How to Install
