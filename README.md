@@ -27,9 +27,14 @@ CkOpenImage.open('http://my_site.com/my_image.jpg', 'Optional Title');
 
 ##### Usage
 
-```
+```js
 CkOpenImage.open('http://my_site.com/my_image.jpg', 'Optional Title');
 ```
+
+```js
+CkOpenImage.open('http://my_site.com/my_image.jpg', 'image.jpg');
+```
+
 
 ### TODO
 
