@@ -82,9 +82,11 @@
     NSString* url = [command.arguments objectAtIndex:0];
     NSString* title = [command.arguments objectAtIndex:1];
 
-    [self dismissIfNeeded];
+
 
     [self.commandDelegate runInBackground:^{
+        [self dismissIfNeeded];
+
         if (url != nil && [url length] > 0)
         {
             @try {
