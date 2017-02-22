@@ -1,20 +1,22 @@
 # CkOpenImage
 
-This plugin is intended to show a picture from an URL into a Photo Viewer with zoom features.
+Cordova plugin is intended to show a picture from an URL into a Photo Viewer with zoom features.
 
-> Based on [Photo Viewer][https://github.com/sarriaroman/photoviewer]
+> Based on [Photo Viewer](https://github.com/sarriaroman/photoviewer)
 
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/WuglyakBolgoink/CkOpenImage/master/LICENSE)
+[![iOS](https://img.shields.io/badge/iOS-success-green.svg)](https://shields.io)
 
 ## How to Install
 
 ```bash
-cordova plugin add de-cyberkatze-ckopenimage --save
+cordova plugin add cordova-plugin-ckopenimage --save
 ```
 
 ### API
 
 ```js
-CkOpenImage.open(<URI>, [title, options]);
+CkOpenImage.open(<URI>, [title]);
 ```
 
 #### Open an image
@@ -26,5 +28,10 @@ CkOpenImage.open('http://my_site.com/my_image.jpg', 'Optional Title');
 ##### Usage
 
 ```
-CkOpenImage.open('http://my_site.com/my_image.jpg', 'Optional Title', {share:false});
+CkOpenImage.open('http://my_site.com/my_image.jpg', 'Optional Title');
 ```
+
+### TODO
+
+- add options
+- add isAvailable()
