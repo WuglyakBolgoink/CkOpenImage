@@ -27,24 +27,38 @@
 
 // ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- -- isAvailable
 
-// TODO: add in cordova exports
-- (void) isAvailable:(CDVInvokedUrlCommand*)command {
-    bool avail = NSClassFromString(@"CkOpenImage") != nil;
-    NSLog(@"[CkOpenImage] Is plugin available? %i", avail);
-
-    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:avail] callbackId:command.callbackId];
+- (void)isAvailable:(CDVInvokedUrlCommand*)command
+{
+    [self.commandDelegate runInBackground:^{
+        [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:YES] callbackId:command.callbackId];
+    }];
 }
 
-// ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- -- openDocumentControllerWithURL
+// ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- -- setupDocumentControllerWithURL
 
-- (void)openDocumentControllerWithURL:(NSURL*)url andTitle:(NSString*)title
+- (void)setupDocumentControllerWithURL:(NSURL*)url andTitle:(NSString*)title
 {
-    self.docInteractionController = [UIDocumentInteractionController interactionControllerWithURL:url];
+    if (self.docInteractionController == nil)
+    {
+        self.docInteractionController = [UIDocumentInteractionController interactionControllerWithURL:url];
+        [self.docInteractionController setDelegate:self];
+    } else {
+        [self.docInteractionController setURL:url];
+    }
 
     [self.docInteractionController setName:title];
-    [self.docInteractionController setDelegate:self];
 
     [self.docInteractionController presentPreviewAnimated:YES];
+}
+
+// ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- -- setupDocumentControllerWithURL:usingDelegate
+
+- (UIDocumentInteractionController *) setupDocumentControllerWithURL: (NSURL*) fileURL usingDelegate: (id <UIDocumentInteractionControllerDelegate>) interactionDelegate
+{
+    UIDocumentInteractionController *interactionController = [UIDocumentInteractionController interactionControllerWithURL: fileURL];
+    interactionController.delegate = interactionDelegate;
+
+    return interactionController;
 }
 
 // ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- -- documentInteractionControllerViewControllerForPreview
@@ -58,38 +72,41 @@
 
 - (void)documentInteractionControllerDidEndPreview:(__unused UIDocumentInteractionController*)controller
 {
-    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK  messageAsString:@"[CkOpenImage] Closed"] callbackId:self.tmpCommandCallbackID];
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"[CkOpenImage] Closed"] callbackId:self.tmpCommandCallbackID];
 }
 
-// ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- -- show
-
--(void) dismissIfNeeded
-{
-    if (self.docInteractionController)
-    {
-        [self.docInteractionController dismissPreviewAnimated:YES];
-        self.docInteractionController = nil;
-    }
-}
-
-// ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- -- show
+// ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- -- open
 
 - (void)open:(CDVInvokedUrlCommand*)command
 {
+    // ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- --- add Spinner
+
+    UIActivityIndicatorView *activityIndicator = [[UIActivityIndicatorView alloc] initWithFrame:self.viewController.view.frame];
+
+    [activityIndicator setActivityIndicatorViewStyle:UIActivityIndicatorViewStyleWhiteLarge];
+    [activityIndicator.layer setBackgroundColor:[[UIColor colorWithWhite:0.0 alpha:0.30] CGColor]];
+
+    CGPoint center = self.viewController.view.center;
+
+    activityIndicator.center = center;
+
+    [self.viewController.view addSubview:activityIndicator];
+
+    [activityIndicator startAnimating];
+
+    // ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---
+
     self.tmpCommandCallbackID = command.callbackId;
     self.pluginResult = nil;
 
     NSString* url = [command.arguments objectAtIndex:0];
     NSString* title = [command.arguments objectAtIndex:1];
 
-
-
     [self.commandDelegate runInBackground:^{
-        [self dismissIfNeeded];
-
         if (url != nil && [url length] > 0)
         {
-            @try {
+            @try
+            {
                 self.documentURLs = [NSMutableArray array];
 
                 NSURL* URL = [self localFileURLForImage:url];
@@ -97,14 +114,23 @@
                 if (URL)
                 {
                     [self.documentURLs addObject:URL];
-                    [self openDocumentControllerWithURL:URL andTitle:title];
-                } else {
+
+                    double delayInSeconds = 0.1;
+                    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+                    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                        [activityIndicator stopAnimating];
+
+                        [self setupDocumentControllerWithURL:URL andTitle:title];
+                    });
+                }
+                else
+                {
                     [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Bad file path."] callbackId:command.callbackId];
                 }
             }
             @catch (NSException* e)
             {
-                NSLog(@"Exception: %@", e);
+                NSLog(@"[CkOpenImage] Exception(open): %@", e);
                 [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:e.reason] callbackId:command.callbackId];
             }
         }
@@ -132,7 +158,7 @@
     }
     @catch (NSException* e)
     {
-        NSLog(@"[CkOpenImage] Exception (Can not get filesize): %@", e);
+        NSLog(@"[CkOpenImage] Exception (fileSizeValue): %@", e);
         return nil;
     }
 
@@ -153,12 +179,15 @@
 
             return fileURL;
         }
-        @catch (NSException* e) {
-            NSLog(@"Exception: %@", e);
+        @catch (NSException* e)
+        {
+            NSLog(@"Exception (localFileURLForImage): %@", e);
         }
 
         return nil;
-    } else {
+    }
+    else
+    {
         NSLog(@"[CkOpenImage] Error: Data not exist!");
         return nil;
     }
@@ -192,4 +221,3 @@
 // ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- --
 
 @end
-
