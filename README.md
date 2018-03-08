@@ -1,5 +1,7 @@
 # cordova-plugin-ckopenimage
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/WuglyakBolgoink/CkOpenImage.svg)](https://greenkeeper.io/)
+
 Cordova plugin is intended to show a picture from an URL into a Photo Viewer with zoom features.
 
 > Based on [Photo Viewer](https://github.com/sarriaroman/photoviewer)
